@@ -25,7 +25,7 @@ export const sqlinsertquery=async(data:userdata)=>{
    type getdata={
     email:string
    }
-type tkninfo={
+type tkninfo=RowDataPacket&{
     userid:string,
     email:string,
     name:string
@@ -37,7 +37,7 @@ export const getall=async(data:getdata):Promise<tkninfo | null>=>{
         'select * from person where email =?',
         [data.email]
     )
-    return res.length > 0 ? res[0] : null
+    return res.length > 0 ? res[0]! : null
 }
 
 
@@ -57,7 +57,7 @@ userid:string
 }
 
 
-type info={
+type info=RowDataPacket &{
 expired_at:number,
 token:string,
 added_at:string,
@@ -65,13 +65,14 @@ userid:string
 }
 
 export const sqlfindtoken=async(data:findtkn):Promise<info | null>=>{
+    // console.log(data.userid);
     try{
  const [res]=await db.query<info[]>(
 'select * from  refreshtoken where userid=?',
 [data.userid]
 )
 // console.log(res)
-return res.length > 0 ? res[0] : null
+return res.length > 0 ? res[0]! : null
 }catch(err){
     console.log("find token error");
     throw err
@@ -111,5 +112,22 @@ export const inserttknquery=async(data:inserttkn)=>{
  return res   
     }catch(err){
         throw err
+    }
+}
+
+type nosqldta={
+    id:string,
+    name:string,
+    email:string,
+    registered_at:string
+}
+
+
+export const getdatanosql=async(data:getdata):Promise<nosqldta | null>=>{
+    try{
+const getinfos=await  nosqldb.collection<nosqldta>("tscollect").findOne({email:data.email});
+return getinfos;
+    }catch(err){
+        throw new Error()
     }
 }

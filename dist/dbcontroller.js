@@ -1,4 +1,4 @@
-import { getall, inserttknquery, nosqlinsertquery, sqlfindtoken, sqlinsertquery, updatequery } from "./servicefile.js";
+import { getall, getdatanosql, inserttknquery, nosqlinsertquery, sqlfindtoken, sqlinsertquery, updatequery } from "./servicefile.js";
 import bcrypt from 'bcrypt';
 import { accesstoken, refreshtoken } from './tokens.js';
 export const insertuser = async (req, resp) => {
@@ -11,7 +11,6 @@ export const insertuser = async (req, resp) => {
         console.log("id", idd);
         const hash = await bcrypt.hash(password, 10);
         const insertsqlquery = await sqlinsertquery({ id: idd, email, name, password: hash });
-        // const insertsqlquery=await nosqlinsertquery({id:idd,email,name,password:hash})
         return resp.status(200).json({ success: true, message: "db insert success" });
     }
     catch (err) {
@@ -26,29 +25,34 @@ export const loginsqluser = async (req, resp) => {
     }
     try {
         const result = await getall({ email });
-        const compare = await bcrypt.compare(password, result[0].password);
+        if (!result) {
+            return resp.status(400).json({ success: false, message: "no result in the array" });
+        }
+        const compare = await bcrypt.compare(password, result.password);
         if (!compare) {
             return resp.status(400).json({ success: false, message: "password is incorrect" });
         }
-        const userid = result[0].id;
-        const access = accesstoken(result[0].id);
+        const userid = result.id;
+        const access = accesstoken({ userid: result.userid });
         let refresh;
         const gettkninfo = await sqlfindtoken({ userid });
-        if (!gettkninfo || gettkninfo.length === 0) {
+        if (!gettkninfo) {
+            return resp.status(400).json({ success: false, message: "no result in the token info type array" });
+        }
+        if (!gettkninfo) {
             console.log("came here");
-            refresh = refreshtoken(result[0].id);
+            refresh = refreshtoken({ userid: result.userid });
             console.log(refresh);
             const inserttoken = await inserttknquery({ userid, token: refresh });
         }
         const now = Date.now();
-        const refresh_expiry = gettkninfo[0].expired_at;
-        // console.log("expiry",refresh_expiry)
+        const refresh_expiry = gettkninfo.expired_at;
         if (now > refresh_expiry) {
-            refresh = refreshtoken(result[0].id);
+            refresh = refreshtoken({ userid: result.userid });
             const updatetoken = await updatequery({ token: refresh, userid });
         }
         else {
-            refresh = gettkninfo[0].token;
+            refresh = gettkninfo.token;
         }
         console.log("now came here to set cookie");
         resp.cookie("refresh", refresh, {
@@ -78,5 +82,15 @@ export const insertuserinnosql = async (req, resp) => {
     catch (err) {
         return resp.status(400).json({ success: false, message: "error insertion in db"
         });
+    }
+};
+export const nosqlget = async (req, resp) => {
+    const { email } = req.body;
+    try {
+        const getall = await getdatanosql({ email });
+        return resp.status(200).json({ success: true, message: getall?.name });
+    }
+    catch (err) {
+        return resp.status(400).json({ success: false, message: "nosql error" });
     }
 };

@@ -1,8 +1,9 @@
 
 import  { Request, Response } from 'express';
-import { getall, inserttknquery, nosqlinsertquery, sqlfindtoken, sqlinsertquery, updatequery } from "./servicefile.js";
+import { getall, getdatanosql, inserttknquery, nosqlinsertquery, sqlfindtoken, sqlinsertquery, updatequery } from "./servicefile.js";
 import bcrypt from 'bcrypt';
 import { accesstoken, refreshtoken } from './tokens.js';
+
 
 
 export const insertuser=async(req:Request,resp:Response)=>{
@@ -15,7 +16,7 @@ const idd= crypto.randomUUID();
 console.log("id",idd);
 const hash=await bcrypt.hash(password,10);
 const insertsqlquery=await sqlinsertquery({id:idd,email,name,password:hash})
-// const insertsqlquery=await nosqlinsertquery({id:idd,email,name,password:hash})
+
         return resp.status(200).json({success:true,message:"db insert success"})
     }catch(err){
         return resp.status(400).json({success:false,message
@@ -39,7 +40,8 @@ const compare=await bcrypt.compare(password,result.password);
 if(!compare){
     return resp.status(400).json({success:false,message:"password is incorrect"})
 }
-const userid:string=result.userid
+const userid:string=result.id
+
 const access:string=accesstoken({userid:result.userid});
 let refresh:string;
 
@@ -55,7 +57,7 @@ if(!gettkninfo){
 }
 const now=Date.now();
 const refresh_expiry:number=gettkninfo.expired_at
-// console.log("expiry",refresh_expiry)
+
 if(now > refresh_expiry){
     refresh=refreshtoken({userid:result.userid})
     const updatetoken= await updatequery({token:refresh,userid})
@@ -99,7 +101,14 @@ const insertsqlquery=await nosqlinsertquery({id:idd,email,name,password:hash})
 }
 
 
-
-
+export const nosqlget=async(req:Request,resp:Response)=>{
+    const{email}=req.body;
+    try{
+    const getall=await getdatanosql({email});
+    return resp.status(200).json({success:true,message:getall?.name})
+}catch(err){
+    return resp.status(400).json({success:false,message:"nosql error"})
+}
+}
 
 
