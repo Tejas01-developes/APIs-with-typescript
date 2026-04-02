@@ -16,7 +16,13 @@ type tkninfo = RowDataPacket & {
     password: string;
 };
 export declare const getall: (data: getdata) => Promise<tkninfo | null>;
-export declare const nosqlinsertquery: (data: userdata) => Promise<string>;
+type nosqluserdata = {
+    id: string;
+    email: string;
+    name: string;
+    password: string;
+};
+export declare const nosqlinsertquery: (data: nosqluserdata) => Promise<string>;
 type findtkn = {
     userid: string;
 };
@@ -42,6 +48,7 @@ type nosqldta = {
     name: string;
     email: string;
     registered_at: string;
+    password: string;
 };
 export declare const getdatanosql: (data: getdata) => Promise<nosqldta | null>;
 export {};

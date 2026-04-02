@@ -4,6 +4,6 @@ const router = express.Router();
 router.post("/", insertuser);
 router.post("/login", loginsqluser);
 router.post("/nosql", insertuserinnosql);
-router.get("/nosqlget", nosqlget);
+router.post("/nosqlget", nosqlget);
 export default router;
 //# sourceMappingURL=routes.js.map
