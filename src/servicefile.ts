@@ -6,6 +6,7 @@ import { RowDataPacket } from "mysql2"
 
 
 
+
 type userdata={
     id:string
   email:string,
@@ -40,11 +41,25 @@ export const getall=async(data:getdata):Promise<tkninfo | null>=>{
     return res.length > 0 ? res[0]! : null
 }
 
+type insertdta={
+    email:string,
+    id:number,
+    name:string,
+    password:string,
+    registered_at:Date
+}
 
+type nosqluserdata={
+    id:number
+  email:string,
+  name:string,
+  password:string
 
-export const nosqlinsertquery=async(data:userdata)=>{
+    }
+
+export const nosqlinsertquery=async(data:nosqluserdata)=>{
     try{
-const insertnosql=await nosqldb.collection("tscollect").insertOne({id:data.id,email:data.email,name:data.name,password:data.password,registered_at:new Date(Date.now())});
+const insertnosql=await nosqldb.collection<insertdta>("tscollect").insertOne({id:data.id,email:data.email,name:data.name,password:data.password,registered_at:new Date(Date.now())});
 return "success insert"
 
 }catch(err){
@@ -121,8 +136,6 @@ type nosqldta={
     email:string,
     registered_at:string
 }
-
-
 export const getdatanosql=async(data:getdata):Promise<nosqldta | null>=>{
     try{
 const getinfos=await  nosqldb.collection<nosqldta>("tscollect").findOne({email:data.email});

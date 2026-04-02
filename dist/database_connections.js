@@ -15,3 +15,4 @@ export const db = mysql.createPool({
     database: process.env.MYSQL_DB,
     password: process.env.MYSQL_PASS
 });
+//# sourceMappingURL=database_connections.js.map

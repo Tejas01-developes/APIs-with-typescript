@@ -18,3 +18,4 @@ export const nosqldatabase = async () => {
     }
 };
 export { nosqldb };
+//# sourceMappingURL=nosql_dbconnection.js.map

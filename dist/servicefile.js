@@ -59,3 +59,4 @@ export const getdatanosql = async (data) => {
         throw new Error();
     }
 };
+//# sourceMappingURL=servicefile.js.map

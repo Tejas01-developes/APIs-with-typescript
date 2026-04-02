@@ -7,3 +7,4 @@ export const accesstoken = (userid) => {
 export const refreshtoken = (id) => {
     return jwt.sign({ id: id }, process.env.REFRESH_KEY, { expiresIn: '7d' });
 };
+//# sourceMappingURL=tokens.js.map

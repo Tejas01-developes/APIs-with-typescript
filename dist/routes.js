@@ -6,3 +6,4 @@ router.post("/login", loginsqluser);
 router.post("/nosql", insertuserinnosql);
 router.get("/nosqlget", nosqlget);
 export default router;
+//# sourceMappingURL=routes.js.map

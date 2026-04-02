@@ -8,3 +8,4 @@ nosqldatabase();
 app.listen(3000, () => {
     console.log("server started on the port 3000");
 });
+//# sourceMappingURL=app.js.map

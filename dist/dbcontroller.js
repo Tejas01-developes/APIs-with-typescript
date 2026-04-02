@@ -94,3 +94,4 @@ export const nosqlget = async (req, resp) => {
         return resp.status(400).json({ success: false, message: "nosql error" });
     }
 };
+//# sourceMappingURL=dbcontroller.js.map
