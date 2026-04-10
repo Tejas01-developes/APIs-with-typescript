@@ -4,15 +4,20 @@ import { getall, getdatanosql, inserttknquery, nosqlinsertquery, sqlfindtoken, s
 import bcrypt from 'bcrypt';
 import { accesstoken, refreshtoken } from './tokens.js';
 
+type recivebody={
+    email:string,
+    name:string,
+    password:string
+}
 
 
-export const insertuser=async(req:Request,resp:Response)=>{
+export const insertuser=async(req:Request<{},{},recivebody>,resp:Response)=>{
     try{
-    const{email,name,password}=req.body;
+    const{email,name,password}=req.body
 if(!name || !email || !password){
     return resp.status(400).json({success:false,message:"not recived body"})
 }
-const idd= crypto.randomUUID();
+const idd:string= crypto.randomUUID();
 console.log("id",idd);
 const hash=await bcrypt.hash(password,10);
 const insertsqlquery=await sqlinsertquery({id:idd,email,name,password:hash})
@@ -102,10 +107,20 @@ const insertsqlquery=await nosqlinsertquery({id:idd,email,name,password:hash})
 
 
 export const nosqlget=async(req:Request,resp:Response)=>{
-    const{email}=req.body;
+    const{email,password}=req.body;
+    if(!email || !password){
+        return resp.status(400).json({success:false,message:"no body recived"})
+    }
     try{
     const getall=await getdatanosql({email});
-    return resp.status(200).json({success:true,message:getall?.name})
+    if(!getall){
+        return resp.status(400).json({success:false,message:"getting password from database failed"})
+    }
+    const compare=await bcrypt.compare(password,getall.password);
+    if(!compare){
+        return resp.status(400).json({success:false,message:"password is incorrect"})
+    }
+    return resp.status(200).json({success:true,message:getall.name})
 }catch(err){
     return resp.status(400).json({success:false,message:"nosql error"})
 }

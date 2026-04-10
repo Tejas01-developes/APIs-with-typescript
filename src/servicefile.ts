@@ -43,14 +43,14 @@ export const getall=async(data:getdata):Promise<tkninfo | null>=>{
 
 type insertdta={
     email:string,
-    id:number,
+    id:string,
     name:string,
     password:string,
     registered_at:Date
 }
 
 type nosqluserdata={
-    id:number
+    id:string
   email:string,
   name:string,
   password:string
@@ -134,7 +134,8 @@ type nosqldta={
     id:string,
     name:string,
     email:string,
-    registered_at:string
+    registered_at:string,
+    password:string
 }
 export const getdatanosql=async(data:getdata):Promise<nosqldta | null>=>{
     try{
@@ -144,3 +145,6 @@ return getinfos;
         throw new Error()
     }
 }
+
+
+
